@@ -1,13 +1,14 @@
 {
   "name": "todo_list_501",
   "version": "1.0.0",
-  "description": "",
+  "description": "", 
   "main": "todo_list.js",
   "scripts": {
     "start": "node todo_list.js",
     "test": "jest",
     "prepare": "husky install"
   },
+  
   "author": "",
   "license": "ISC",
   "dependencies": {

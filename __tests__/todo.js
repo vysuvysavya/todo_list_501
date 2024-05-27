@@ -59,13 +59,16 @@ describe("Todolist test suite", () => {
         expect(dueLaterItems.length).toBe(1);
         expect(dueLaterItems[0].title).toBe('Due later test todo');
     });
+
+
     test("Should display todos in a displayable list format", () => {
         const today = new Date().toLocaleDateString('en-CA');
-        add({
+        add({ 
             title: 'Due today test todo',
             completed: false,
             dueDate: today
         });
+        
         add({
             title: 'Due later test todo',
             completed: false,

@@ -16,10 +16,11 @@ const todoList= ()=>{
       const today = new Date().toLocaleDateString('en-CA'); 
       return todos.filter(todo => todo.dueDate === today && !todo.completed); 
   } 
-  const dueLater=()=> { 
+  const dueLater=()=> {   
       const today = new Date().toLocaleDateString('en-CA'); 
       return todos.filter(todo => todo.dueDate > today && !todo.completed); 
   } 
+  
   const clearAll = ()=>{ 
       todos = []; 
   } 
