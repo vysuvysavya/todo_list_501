@@ -4,84 +4,92 @@ const { Model, Op } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
-    static async addTask(params) {
-      return await Todo.create(params);
-    }
+  //   static async addTask(params) {
+  //     return await Todo.create(params);
+  //   }
 
-    static async showList() {
-      console.log("My Todo list\n");
+  //   static async showList() {
+  //     console.log("My Todo list\n");
 
-      console.log("Overdue");
-      const overdueItems = await this.overdue();
-      overdueItems.forEach(item => console.log(item.displayableString()));
-      console.log("\n");
+  //     console.log("Overdue");
+  //     const overdueItems = await this.overdue();
+  //     overdueItems.forEach(item => console.log(item.displayableString()));
+  //     console.log("\n");
 
-      console.log("Due Today");
-      const dueTodayItems = await this.dueToday();
-      dueTodayItems.forEach(item => console.log(item.displayableString()));
-      console.log("\n");
+  //     console.log("Due Today");
+  //     const dueTodayItems = await this.dueToday();
+  //     dueTodayItems.forEach(item => console.log(item.displayableString()));
+  //     console.log("\n");
 
-      console.log("Due Later");
-      const dueLaterItems = await this.dueLater();
-      dueLaterItems.forEach(item => console.log(item.displayableString()));
-    }
+  //     console.log("Due Later");
+  //     const dueLaterItems = await this.dueLater();
+  //     dueLaterItems.forEach(item => console.log(item.displayableString()));
+  //   }
 
-    static async overdue() {
-      const today = new Date().toISOString().split('T')[0];
-      return await Todo.findAll({
-        where: {
-          dueDate: {
-            [Op.lt]: today
-          },
-          completed: false
-        },
-        order: [['dueDate', 'ASC']]
-      });
-    }
+  //   static async overdue() {
+  //     const today = new Date().toISOString().split('T')[0];
+  //     return await Todo.findAll({
+  //       where: {
+  //         dueDate: {
+  //           [Op.lt]: today
+  //         },
+  //         completed: false
+  //       },
+  //       order: [['dueDate', 'ASC']]
+  //     });
+  //   }
 
-    static async dueToday() {
-      const today = new Date().toISOString().split('T')[0];
-      return await Todo.findAll({
-        where: {
-          dueDate: today,
-          completed: false
-        },
-        order: [['dueDate', 'ASC']]
-      });
-    }
+  //   static async dueToday() {
+  //     const today = new Date().toISOString().split('T')[0];
+  //     return await Todo.findAll({
+  //       where: {
+  //         dueDate: today,
+  //         completed: false
+  //       },
+  //       order: [['dueDate', 'ASC']]
+  //     });
+  //   }
 
-    static async dueLater() {
-      const today = new Date().toISOString().split('T')[0];
-      return await Todo.findAll({
-        where: {
-          dueDate: {
-            [Op.gt]: today
-          },
-          completed: false
-        },
-        order: [['dueDate', 'ASC']]
-      });
-    }
+  //   static async dueLater() {
+  //     const today = new Date().toISOString().split('T')[0];
+  //     return await Todo.findAll({
+  //       where: {
+  //         dueDate: {
+  //           [Op.gt]: today
+  //         },
+  //         completed: false
+  //       },
+  //       order: [['dueDate', 'ASC']]
+  //     });
+  //   }
 
-    static async markAsComplete(id) {
-      const todo = await Todo.findByPk(id);
-      if (todo) {
-        todo.completed = true;
-        await todo.save();
-      }
-    }
+  //   static async markAsComplete(id) {
+  //     const todo = await Todo.findByPk(id);
+  //     if (todo) {
+  //       todo.completed = true;
+  //       await todo.save();
+  //     }
+  //   }
 
     static associate(models) {
       // define association here if needed
     }
 
-    displayableString() {
-      const checkbox = this.completed ? "[x]" : "[ ]";
-      const dueDateString = this.dueDate ? this.dueDate : "";
-      return `${this.id}. ${checkbox} ${this.title.trim()} ${dueDateString}`;
+  //   displayableString() {
+  //     const checkbox = this.completed ? "[x]" : "[ ]";
+  //     const dueDateString = this.dueDate ? this.dueDate : "";
+  //     return `${this.id}. ${checkbox} ${this.title.trim()} ${dueDateString}`;
+  //   }
+  // }
+    static addTodo({title,dueDate}){
+      return this.create({title:title, dueDate:dueDate, completed:false})
     }
-  }
 
+    markAsCompleted(){
+      return this.update({completed:true})
+    }
+
+  }
   Todo.init({
     title: {
       type: DataTypes.STRING,
