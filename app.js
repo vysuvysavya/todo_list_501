@@ -125,9 +125,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Todo } = require('./models');  // Ensure this is the correct path to your models file
 const db = require('./models'); 
+const path = require('path');
 
 const app = express();
 app.use(bodyParser.json());
+
+app.set("view engine","ejs");
+
+app.get('/',(req,res)=>{
+  res.render('index');
+})
+
+app.use(express.static(path.join(__dirname,'public')));
 
 app.get('/todos', async (req, res) => {
   try {
