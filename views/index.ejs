@@ -7,6 +7,12 @@
    <link rel="stylesheet" href="./css/style.css">
  </head>
  <body>
-   <h1>This is index page!</h1>
+       <%- include('header.ejs') %>
+    <table>
+      <% for(var i =0 ; i< allTodos.length; i++){%> 
+       <tr><td><%=allTodos[i].title%></td></tr>
+      <% }%>
+      
+    </table>
  </body>
 </html>
