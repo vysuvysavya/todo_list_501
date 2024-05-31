@@ -7,12 +7,22 @@
    <link rel="stylesheet" href="./css/style.css">
  </head>
  <body>
-       <%- include('header.ejs') %>
-    <table>
-      <% for(var i =0 ; i< allTodos.length; i++){%> 
-       <tr><td><%=allTodos[i].title%></td></tr>
-      <% }%>
-      
-    </table>
+   <%- include('header.ejs') %>
+
+   <h2>Overdue (<%= overdueTodos.length %>)</h2>
+   <table>
+     <%- include('todos.ejs', { todos: overdueTodos }) %>
+   </table>
+
+   <h2>Due Today (<%= dueTodayTodos.length %>)</h2>
+   <table>
+     <%- include('todos.ejs', { todos: dueTodayTodos }) %>
+   </table>
+
+   <h2>Due Later (<%= dueLaterTodos.length %>)</h2>
+   <table>
+     <%- include('todos.ejs', { todos: dueLaterTodos }) %>
+   </table>
+
  </body>
 </html>
