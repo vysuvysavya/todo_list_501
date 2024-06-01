@@ -6,6 +6,33 @@
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <script src="https://cdn.tailwindcss.com"></script>
    <link rel="stylesheet" href="./css/style.css">
+   <script>
+    function updateTodo (id) {
+   
+      fetch(`/todos/${id}/markAsCompleted`, {
+    method: "put",
+    headers: { "Content-Type": "application/json"},
+    }).then((res) => {
+      if (res.ok){
+        window.location.reload();
+      }
+    })
+    .catch((err) => console.error(err));
+    }
+    function deleteTodo(id){
+      fetch(`/todos/${id}`,{
+        method:'delete',
+        headers:{'Content-Type':"application/json"},
+      })
+      .then((res) => {
+      if (res.ok){
+        window.location.reload();
+      }
+    })
+    .catch((err) => console.error(err));
+    }
+  
+    </script>
  </head>
  <body>
   

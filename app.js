@@ -152,18 +152,18 @@ app.use(express.static(path.join(__dirname,'public')));
 app.get('/todos', async (req, res) => {
   try {
     const todos = await Todo.findAll();
-    res.json(todos);
+    return res.json(todos);
     console.log(todos)
   } catch (error) {
     console.error(error);
-    res.status(500).json( );
+    return res.status(500).json( );
   }
 });
 
 app.post('/todos', async (req, res) => {
   console.log('Creating a todo', req.body);
   try {
-    const todo = await Todo.addTodo({ title: req.body.title, dueDate: req.body.dueDate });
+    await Todo.addTodo({ title: req.body.title, dueDate: req.body.dueDate });
     return res.redirect('/');
   } 
   
@@ -178,26 +178,21 @@ app.put('/todos/:id/markAsCompleted', async (req, res) => {
   try {
     const todo = await Todo.findByPk(req.params.id);
     const updatedTodo = await todo.markAsCompleted();
-    res.json(updatedTodo);
+    return res.json(updatedTodo);
   } catch (error) {
     console.error(error);
-    res.status(422).json(error);
+    return res.status(422).json(error);
   }
 });
 
 
 app.delete('/todos/:id', async (req, res) => {
-  const todoID = req.params.id;
-  console.log(`Deleting a todo with ID: ${todoID}`);
+  console.log(`Deleting a todo with ID:`, req.params.id);
   try {
-    const result = await db.Todo.destroy({ where: { id: todoID } });
-    if (result) {
-      res.json({ message: 'Todo deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Todo not found' });
-    }
+    await Todo.remove(req.params.id);
+     return res.json({success:true});
   } catch (error) {
-    res.status(422).json( error);
+    return res.status(422).json( error);
   }
 });
 
