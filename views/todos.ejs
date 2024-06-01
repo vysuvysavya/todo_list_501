@@ -1,7 +1,6 @@
 <!-- views/todos.ejs -->
 <% todos.forEach(todo => { %>
-    <tr>
-      <td><%= todo.title %></td>
-    </tr>
+  <input id="todo-checkbox-2" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300">
+  <label for="todo-checkbox-2" class="ml-2 text-sm text-gray-600 cursor-pointer"><%= todo.title %></label>
   <% }) %>
   
