@@ -129,6 +129,7 @@ const path = require('path');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(express.urlencoded({extended:false}));
 
 app.set("view engine","ejs");
 
@@ -163,10 +164,12 @@ app.post('/todos', async (req, res) => {
   console.log('Creating a todo', req.body);
   try {
     const todo = await Todo.addTodo({ title: req.body.title, dueDate: req.body.dueDate });
-    res.json(todo);
-  } catch (error) {
+    return res.redirect('/');
+  } 
+  
+  catch (error) {
     console.error(error);
-    res.status(422).json(error);
+    return res.status(422).json(error);
   }
 });
 
