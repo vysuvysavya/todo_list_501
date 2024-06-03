@@ -126,10 +126,13 @@ const bodyParser = require('body-parser');
 const { Todo } = require('./models');  // Ensure this is the correct path to your models file
 const db = require('./models'); 
 const path = require('path');
-
+const csrf = require('csurf')
+const cookieParser = require('cookie-parser');
 const app = express();
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:false}));
+app.use(cookieParser('ssh some secret string!'));
+app.use(csrf({cookie:true}))
 
 app.set("view engine","ejs");
 
@@ -140,7 +143,9 @@ app.get('/',async (req,res)=>{
     const dueTodayTodos = allTodos.filter(todo => new Date(todo.dueDate).toDateString() === new Date().toDateString());
     const dueLaterTodos = allTodos.filter(todo => new Date(todo.dueDate) > new Date());
   
-    res.render('index', { overdueTodos, dueTodayTodos, dueLaterTodos });
+    res.render('index', { overdueTodos, dueTodayTodos, dueLaterTodos,
+      csrfToken : req.csrfToken(),
+     });
     
   }else{
     res.json(allTodos)
