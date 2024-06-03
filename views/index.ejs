@@ -12,11 +12,12 @@
      .querySelector('meta[name="csrf-token"]')
      .getAttribute('content')
 
-    function updateTodo (id) {
-      fetch(`/todos/${id}/markAsCompleted`, {
+    function updateTodo (id,completed) {
+      fetch(`/todos/${id}`, {
       method: "put",
       headers: { "Content-Type": "application/json"},
       body: JSON.stringify({
+        completed:completed,
       '_csrf':token
     })
     }).then((res) => {
@@ -45,30 +46,30 @@
     </script>
  </head>
  <body>
-  
   <div class="grid grid-cols-6">
     <div class="col-start-3 col-span-2">
       <%- include('header.ejs') %>
-  <form method="POST" action="/todos">
-    <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-    <div class="flex gap-2 py-4">
-      <div class="flex-auto w-64">
-        <input type="text" name="title" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2" placeholder="What's next?" autofocus required>
+      <form method="POST" action="/todos">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="flex gap-2 py-4">
+          <div class="flex-auto w-64">
+            <input type="text" name="title" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2" placeholder="What's next?" autofocus required>
+          </div>
+          <div class="flex-auto w-32">
+            <input type="date" name="dueDate" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4">
+          </div>
+          <div class="flex-none">
+            <button type="submit" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded text-sm px-5 py-2 mr-2 mb-2">Add</button>
+          </div>
+        </div>
+      </form>
+      <div class="mt-2">
+        <%- include('todos.ejs', { title: "Overdue", todos: overdueTodos }) %>
+        <%- include('todos.ejs', { title: "Due Today", todos: dueTodayTodos }) %>
+        <%- include('todos.ejs', { title: "Due Later", todos: dueLaterTodos }) %>
+        <%- include('todos.ejs', { title: "Completed Items", todos: completedTodos }) %>
       </div>
-      <div class="flex-auto w-32">
-        <input type="date" name ="dueDate" class="border border-gray-300 text-gray-900 text-sm rounded w-full p-2 leading-4	">
-      </div>
-      <div class="flex-none">
-        <button type="submit" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded text-sm px-5 py-2 mr-2 mb-2">Add</button>
-      </div>            
-     </div>
-    </form>
-    <div class="mt-2">  
-      <%- include('todos.ejs', { title:"Overdue",todos: overdueTodos }) %>
-      <%- include('todos.ejs', { title:"Due Today",todos: dueTodayTodos }) %>
-      <%- include('todos.ejs', { title:"Due Later",todos: dueLaterTodos }) %>
-    </div> 
+    </div>
   </div>
-</div>
- </body>
+</body>
 </html>

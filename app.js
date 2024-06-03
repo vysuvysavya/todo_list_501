@@ -126,14 +126,19 @@ const bodyParser = require('body-parser');
 const { Todo } = require('./models');  // Ensure this is the correct path to your models file
 const db = require('./models'); 
 const path = require('path');
-const csrf = require('csurf')
+const csrf = require('tiny-csrf')
 const cookieParser = require('cookie-parser');
 const app = express();
+
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:false}));
 app.use(cookieParser('ssh some secret string!'));
-app.use(csrf({cookie:true}))
-
+app.use(
+  csrf(
+    "123456789iamasecret987654321look", // secret -- must be 32 bits or chars in length
+    ["POST",'PUT','DELETE'] // the request methods we want CSRF protection for
+)
+);
 app.set("view engine","ejs");
 
 app.get('/',async (req,res)=>{
@@ -142,8 +147,9 @@ app.get('/',async (req,res)=>{
     const overdueTodos = allTodos.filter(todo => new Date(todo.dueDate) < new Date());
     const dueTodayTodos = allTodos.filter(todo => new Date(todo.dueDate).toDateString() === new Date().toDateString());
     const dueLaterTodos = allTodos.filter(todo => new Date(todo.dueDate) > new Date());
-  
-    res.render('index', { overdueTodos, dueTodayTodos, dueLaterTodos,
+    const completedTodos = allTodos.filter(todo => todo.completed);
+
+    res.render('index', { overdueTodos, dueTodayTodos, dueLaterTodos,completedTodos,
       csrfToken : req.csrfToken(),
      });
     
@@ -182,7 +188,7 @@ app.put('/todos/:id/markAsCompleted', async (req, res) => {
   console.log('We have to update a todo with ID:', req.params.id);
   try {
     const todo = await Todo.findByPk(req.params.id);
-    const updatedTodo = await todo.markAsCompleted();
+    const updatedTodo = await todo.setCompletionStatus(req.body.completed);
     return res.json(updatedTodo);
   } catch (error) {
     console.error(error);

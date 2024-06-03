@@ -82,15 +82,18 @@ module.exports = (sequelize, DataTypes) => {
   //   }
   // }
   static getTodos(){
-    return this.findAll();
+    return this.findAll({ order: [['dueDate', 'ASC']] });
   }
     static addTodo({title,dueDate}){
       return this.create({title:title, dueDate:dueDate, completed:false})
     }
 
-    markAsCompleted(){
-      return this.update({completed:true})
+    setCompletionStatus = async function (completed) {
+      this.completed = completed;
+      await this.save();
+      return this;
     }
+    
     static async remove (id){
       return this.destroy({
         where:{

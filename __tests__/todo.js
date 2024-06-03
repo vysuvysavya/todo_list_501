@@ -63,23 +63,37 @@ describe("Todolist Test Suite", () => {
     const parsedUpdateResponse = JSON.parse(markCompleteResponse.text);
     expect(parsedUpdateResponse.completed).toBe(true);
   });
-  // test('Delete a todo', async () => {
-  //   const response = await agent.post('/todos').send({
-  //     title: 'Buy Milk',
-  //     dueDate: new Date().toISOString(),
-  //     completed: false
-  //   });
-  //   const parsedResponse = JSON.parse(response.text);
-  //   const todoID = parsedResponse.id;
+  test('Delete a todo', async () => {
+    const res = await agent.get('/');
+    const csrfToken = extractCsrfToken(res);
+    const response = await agent.post('/todos').send({
+      title: 'Buy Milk',
+      dueDate: new Date().toISOString(),
+      completed: false,
+      '_csrf': csrfToken
+    });
 
-  //   expect(parsedResponse.id).toBeDefined();
+    const groupedResponse = await agent
+      .get('/')
+      .set('Accept', 'application/json');
+    const parsedGroupedResponse = JSON.parse(groupedResponse.text);
+    const dueTodayCount = parsedGroupedResponse.dueToday ? parsedGroupedResponse.dueToday.length : 0;
+    if (dueTodayCount === 0) {
+      console.log("No todos found in dueToday:", parsedGroupedResponse);
+      return;
+    }
 
-  //   const deleteResponse = await agent.delete(`/todos/${todoID}`).send();
-  //   expect(deleteResponse.statusCode).toBe(200);
-  //   const deleteParsedResponse = JSON.parse(deleteResponse.text);
-  //   expect(deleteParsedResponse.message).toBe('Todo deleted successfully');
+    const latestTodo = parsedGroupedResponse.dueToday[dueTodayCount - 1];
 
-  //   const getResponse = await agent.get(`/todos/${todoID}`).send();
-  //   expect(getResponse.statusCode).toBe(404);
-  // });
+    res = await agent.get('/');
+    csrfToken = extractCsrfToken(res);
+
+    const deleteResponse = await agent.delete(`/todos/${latestTodo.id}`).send({
+      '_csrf': csrfToken
+    });
+    expect(deleteResponse.statusCode).toBe(200);
+
+    const verifyDeleteResponse = await agent.get(`/todos/${latestTodo.id}`);
+    expect(verifyDeleteResponse.statusCode).toBe(404);
+  });
 });
