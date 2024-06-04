@@ -123,7 +123,7 @@
 // // })();
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Todo } = require('./models');  // Ensure this is the correct path to your models file
+const { Todo } = require('./models');  
 const db = require('./models'); 
 const path = require('path');
 const csrf = require('tiny-csrf')
@@ -135,8 +135,8 @@ app.use(express.urlencoded({extended:false}));
 app.use(cookieParser('ssh some secret string!'));
 app.use(
   csrf(
-    "123456789iamasecret987654321look", // secret -- must be 32 bits or chars in length
-    ["POST",'PUT','DELETE'] // the request methods we want CSRF protection for
+    "123456789iamasecret987654321look", 
+    ["POST",'PUT','DELETE'] 
 )
 );
 app.set("view engine","ejs");
@@ -184,7 +184,7 @@ app.post('/todos', async (req, res) => {
   }
 });
 
-app.put('/todos/:id/markAsCompleted', async (req, res) => {
+app.put('/todos/:id', async (req, res) => {
   console.log('We have to update a todo with ID:', req.params.id);
   try {
     const todo = await Todo.findByPk(req.params.id);
