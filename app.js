@@ -123,12 +123,60 @@
 // // })();
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Todo } = require('./models');  
+const { Todo,User } = require('./models');  
 const db = require('./models'); 
 const path = require('path');
 const csrf = require('tiny-csrf')
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
+const { title } = require('process');
 const app = express();
+
+
+const passport = require('passport');
+const connectEnsureLogin = require('connect-ensure-login');
+const session = require('express-session');
+const LocalStrategy = require('passport-local');
+const { error } = require('console');
+
+app.use(session({
+  secret:'my-super-secret-key-3122817622345656',
+  cookie:{
+    maxAge : 24*60*60*1000
+  }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy({
+  usernameField : 'email',
+  passwordField : 'password'
+},(username,password,done)=>{
+  User.findOne({where:{email:username,password:password}})
+    .then((user)=>{
+      return done(null,user)
+    }).catch((err) => {
+      return (err)
+    })
+}))
+
+passport.serializeUser((user,done)=>{
+  console.log("Serialising user in session",user.id)
+  done(null,user.id)
+});
+
+passport.deserializeUser((id,none)=>{
+  User.findByPk(id)
+  .then(user=>{
+    done(null,user)
+  })
+  .catch(error=>{
+    done(error,null)
+  })
+})
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:false}));
@@ -138,10 +186,18 @@ app.use(
     "123456789iamasecret987654321look", 
     ["POST",'PUT','DELETE'] 
 )
+
 );
 app.set("view engine","ejs");
 
 app.get('/',async (req,res)=>{
+    res.render('index', {
+      title : 'Todo application',
+      csrfToken : req.csrfToken()
+    })
+})
+
+app.get('/todos', connectEnsureLogin.ensureLoggedIn(),async (req,res)=>{
   const allTodos = await Todo.getTodos();
   if(req.accepts('html')){
     const overdueTodos = allTodos.filter(todo => new Date(todo.dueDate) < new Date());
@@ -149,7 +205,7 @@ app.get('/',async (req,res)=>{
     const dueLaterTodos = allTodos.filter(todo => new Date(todo.dueDate) > new Date());
     const completedTodos = allTodos.filter(todo => todo.completed);
 
-    res.render('index', { overdueTodos, dueTodayTodos, dueLaterTodos,completedTodos,
+    res.render('todo', { title:'Todo application',overdueTodos, dueTodayTodos, dueLaterTodos,completedTodos,
       csrfToken : req.csrfToken(),
      });
     
@@ -158,6 +214,31 @@ app.get('/',async (req,res)=>{
   }
 })
 
+app.get('/signup',(req,res)=>{
+  res.render('signup',{title:'Sign-up', csrfToken:req.csrfToken()})
+})
+ 
+app.post('/users',async(req,res)=>{
+  const hashedPwd = await bcrypt.hash(req.body.password,saltRounds)
+
+ try{
+  const user = await User.create({
+    firstName : req.body.firstName,
+    lastName : req.body.lastName,
+    email : req.body.email,
+    password : hashedPwd
+  });
+  req.login(user,(err)=>{
+    if(err){
+      console.log(err)
+    }
+    res.redirect('/todos')
+  })
+  res.redirect('/todos');
+ }catch(err){
+  console.log(err);
+ }
+})
 app.use(express.static(path.join(__dirname,'public')));
 
 app.get('/todos', async (req, res) => {
