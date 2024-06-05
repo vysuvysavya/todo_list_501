@@ -26,8 +26,8 @@
     })
     .catch((err) => console.error(err));
     }
-    function deleteTodo(id){
-      fetch(`/todos/${id}`,{
+    async function deleteTodo(id){
+      await fetch(`/todos/${id}`,{
         method:'delete',
         headers:{'Content-Type':"application/json"},
         body: JSON.stringify({
@@ -42,6 +42,14 @@
     })
     .catch((err) => console.error(err));
     }
+    fetch('/todos', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'CSRF-Token': token  // Adding CSRF token to the request header
+    },
+    body: JSON.stringify({ title: 'New Todo' })
+});
   
     </script>
  </head>
@@ -49,6 +57,7 @@
   <div class="grid grid-cols-6">
     <div class="col-start-3 col-span-2">
       <%- include('header.ejs') %>
+      <a href="/signout">Signout</a>
       <p class="py-2">Welcome to To-do Manager</p>
       <p class="py-2">New here? <a href="/signup" class="text-green-600">Sign-up now</a></p>
       <p class="py-2">Already have an account? <a href="/login" class="text-green-600">Sign-in</a></p>
@@ -66,11 +75,13 @@
           </div>
         </div>
       </form>
+      <% console.log('CSRF Token:', csrfToken); %>
+
       <div class="mt-2">
-        <%- include('todos.ejs', { title: "Overdue", todos: overdueTodos }) %>
-        <%- include('todos.ejs', { title: "Due Today", todos: dueTodayTodos }) %>
-        <%- include('todos.ejs', { title: "Due Later", todos: dueLaterTodos }) %>
-        <%- include('todos.ejs', { title: "Completed Items", todos: completedTodos }) %>
+        <%- include('todos.ejs', { title: "Overdue", todos: overdue }) %>
+        <%- include('todos.ejs', { title: "Due Today", todos: dueToday }) %>
+        <%- include('todos.ejs', { title: "Due Later", todos: dueLater }) %>
+        <%- include('todos.ejs', { title: "Completed Items", todos: completed }) %>
       </div>
     </div>
   </div>
