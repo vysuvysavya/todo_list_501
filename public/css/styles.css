@@ -1,0 +1,7 @@
+body {
+    font-family: sans-serif;
+    background: #FFFFFF;
+  }
+  .todo-item:hover .trash-icon {
+    display: inline-block;
+  } 
