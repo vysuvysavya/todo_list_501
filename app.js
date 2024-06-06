@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const csurf = require('tiny-csrf');
 const cookieParser = require('cookie-parser');
-const port = process.env.PORT || 3000;
 
 
 const passport = require('passport');
