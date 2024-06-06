@@ -51,7 +51,7 @@ passport.use(
          }
        })
        .catch((error) => {
-         return done(err);
+         return done(error);
        });
     }
   )
