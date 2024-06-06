@@ -41,21 +41,25 @@ passport.use(
       passwordField: 'password'
     },
     (username, password, done) => {
-     User.findOne({ where: { email: username } })
-       .then(async function (user) {
-         const result = await bcrypt.compare(password, user.password);
-         if (result) {
-           return done(null, user);
-         } else {
-           return done(null, false, { message: "Invalid password" });
-         }
-       })
-       .catch((error) => {
-         return done(error);
-       });
+      User.findOne({ where: { email: username } })
+        .then(async function (user) {
+          if (!user) {
+            return done(null, false, { message: "Invalid email" });
+          }
+          const result = await bcrypt.compare(password, user.password);
+          if (result) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: "Invalid password" });
+          }
+        })
+        .catch((error) => {
+          return done(error);
+        });
     }
   )
 );
+
 
 passport.serializeUser((user, done) => {
   console.log('serializeUser', user.id);
